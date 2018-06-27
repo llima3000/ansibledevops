@@ -48,7 +48,7 @@
           cloud:
             - name: "{{ vmware_cloud_name }}"
               vtype: CLOUD_VCENTER
-              tenant_ref: '/api/tenant/?name= {{ tenant }}'
+              tenant_ref: '/api/tenant/?name={{ tenant }}'
               dhcp_enabled: false
               license_type: "LIC_CORES"
               vcenter_configuration:
@@ -71,7 +71,7 @@
               avi_api_patch_op: replace
               system_default: true
               cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
-              tenant_ref: "/api/tenant/?name= {{ tenant }}"
+              tenant_ref: "/api/tenant/?name={{ tenant }}"
               static_routes:
               - cloud_ref:  "/api/cloud/?name={{ vmware_cloud_name }}"
                 system_default: false
@@ -139,7 +139,7 @@
           vrfcontext:
             - name: "{{ vrf_name }}"
               cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
-              tenant_ref: "/api/tenant/?name= {{ tenant }}"
+              tenant_ref: "/api/tenant/?name={{ tenant }}"
               gateway_mon:
               - cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
                 gateway_ip:
