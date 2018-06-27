@@ -1,0 +1,29 @@
+---
+#ansible-playbook changeStringGroup.yml
+- hosts: localhost
+  connection: local
+  vars:
+    controller: 10.91.55.10
+    username: admin
+    password: Avi123$%
+    api_version: 17.2.7
+    name: CV1-hosts
+    operation: add
+    type: SG_TYPE_STRING
+
+  roles:
+    - role: avinetworks.avisdk
+
+  tasks: 
+    - name: Create a string group configuration
+      avi_stringgroup:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        avi_api_update_method: patch
+        avi_api_patch_op: "{{ operation }}"
+        kv:
+          - key: avi/html
+        name: "{{ name }}"
+        type: "{{ type }}"

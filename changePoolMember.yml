@@ -1,0 +1,32 @@
+---
+#ansible-playbook changePoolMember.yml
+- hosts: localhost
+  connection: local
+  vars:
+    controller: 10.91.55.10
+    username: admin
+    password: Avi123$%
+    api_version: 17.2.7
+    tenant: admin
+    name: pool1
+    operation: add # delete
+    server: 
+      ip:
+        addr: 10.10.2.22
+        type: V4
+
+  roles:
+    - role: avinetworks.avisdk
+
+  tasks:   
+    - name: Create a Pool with two servers and HTTP monitor
+      avi_pool:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        name: "{{ name }}"
+        avi_api_update_method: patch
+        avi_api_patch_op: "{{ operation }}"
+        servers:
+          - "{{ server }}"

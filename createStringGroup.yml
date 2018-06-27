@@ -1,0 +1,36 @@
+---
+#ansible-playbook createStringGroup.yml
+- hosts: localhost
+  connection: local
+  vars:
+    controller: 10.91.55.10
+    username: admin
+    password: Avi123$%
+    api_version: 17.2.7
+    tenant: admin
+    name: CV1-hosts
+    type: SG_TYPE_STRING
+
+  roles:
+    - role: avinetworks.avisdk
+
+  tasks: 
+    - name: Create a string group configuration
+      avi_stringgroup:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        kv:
+          - key: text/html
+          - key: text/xml
+          - key: text/plain
+          - key: text/css
+          - key: text/javascript
+          - key: application/javascript
+          - key: application/x-javascript
+          - key: application/xml
+          - key: application/pdf
+        name: "{{ name }}"
+        tenant_ref: "/api/tenant/?name={{ tenant }}"
+        type: "{{ type }}"

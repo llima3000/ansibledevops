@@ -1,0 +1,41 @@
+---
+#ansible-playbook creadePool.yml
+- hosts: localhost
+  connection: local
+  vars:
+    controller: 10.91.55.10
+    username: admin
+    password: Avi123$%
+    api_version: 17.2.7
+    tenant: admin
+    name: pool1
+    pool_description: Pool description
+    health_monitor: System-HTTP
+    server01: 
+      ip:
+        addr: 10.10.2.20
+        type: V4
+    server02: 
+      ip:
+        addr: 10.10.2.21
+        type: V4
+  roles:
+    - role: avinetworks.avisdk
+
+  tasks:   
+    - name: Create a Pool with two servers and HTTP monitor
+      avi_pool:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        name: "{{ name }}"
+        description: "{{ pool_description }}"
+        state: present
+        health_monitor_refs:
+            - "/api/healthmonitor?name={{ health_monitor }}"
+        servers:
+          -
+            "{{ server01 }}"
+          -
+            "{{ server02 }}"

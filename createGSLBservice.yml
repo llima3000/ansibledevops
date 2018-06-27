@@ -1,0 +1,81 @@
+---
+#ansible-playbook createGSLBservice.yml -e "gslb_vip=1.1.1.1 gslb_network=1.1.1.0 gslb_netmaskbit=24"
+- hosts: localhost
+  connection: local
+  roles:
+    - { role: avinetworks.avicontroller-vmware }
+    - { role: avinetworks.avisdk }
+  
+  vars:
+    # commom vars 
+    controller: 10.10.29.250
+    username: admin
+    api_version: 17.2.7
+    password: Avi123$%
+    gslb_service_ip: 1.1.1.1
+    description: "Service Description"
+    gslb_service_name: www
+    gslb_fqdn: www.teste.com
+    pool_algorithm: GSLB_SERVICE_ALGORITHM_PRIORITY
+    tenant: admin
+    ttl: 10
+    gslb_down_response_type: GSLB_SERVICE_DOWN_RESPONSE_NONE
+    enabled: true
+    group_priority: 9
+    member_enable: true
+    member_ratio: 1
+
+
+
+  tasks:
+    - name: Get main Cluster Information using avi_api_session
+      avi_api_session:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: get
+        path: cluster
+      register: cluster_info
+      
+    - name: Example to create GslbService object
+      avi_gslbservice:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        name: "{{ gslb_service_name }}"
+        domain_names:
+            - "{{ gslb_fqdn }}"
+        description: "{{ description }}"
+        num_dns_ip: 
+        pool_algorithm: "{{ pool_algorithm }}"
+        tenant_ref: "/api/tenant/?name={{ tenant }}"
+        ttl: {{ ttl }}
+        down_response:
+            type: "{{ gslb_down_response_type }}"
+        enabled: "{{ enabled }}"
+        groups:
+            - 
+                priority: "{{ group_priority }}"
+                members:
+                    - 
+                        enabled: "{{ member_enable }}"
+                        ratio: "{{ member_ratio }}"
+                        ip:
+                            addr: "{{ gslb_service_ip }}"
+                            type: V4
+                        cluster_uuid: tp_cluster-c96835ca-1052-4022-aee9-339673e614f7
+                    - 
+                        enabled: true
+                        ratio: 1
+                        ip:
+                            addr: 1.2.3.4
+                            type: V4
+                        cluster_uuid: tp_cluster-c96835ca-1052-4022-aee9-339673e614f7
+                algorithm: GSLB_ALGORITHM_ROUND_ROBIN
+                name: www-pool
+        health_monitor_scope: GSLB_SERVICE_HEALTH_MONITOR_ALL_MEMBERS
+        health_monitor_refs:
+            - 'https://10.10.29.250/api/healthmonitor/healthmonitor-8a49c6a0-21e5-436b-b3bd-01413b120226#System-GSLB-HTTP'
+

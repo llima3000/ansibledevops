@@ -1,0 +1,94 @@
+---
+#ansible-playbook configCloud.yml -e "controller=10.10.29.250"
+- hosts: localhost
+  connection: local
+  vars:
+    controller: 10.10.29.250
+    username: admin
+    password: Avi123$%
+    api_version: 17.2.7
+    vcenter_url: "10.10.2.10"
+    vcenter_user: root
+    vcenter_pwd: vmware
+    tenant: admin
+    discovery_time: 750
+    vmware_cloud_name: vmwarecloud
+    cloud_datacenter: 10GTest
+    old_password: 58NFaGDJm(PJH0G
+    vmware_cluster_name: Arista
+    vm_mgmt_nw_name: PG-1055
+    vm_mgmt_nw_addr: 10.91.55.0
+    vm_mgmt_maskbits: 24
+    vm_mgmt_begin_addr: 10.91.55.100
+    vm_mgmt_end_addr: 10.91.55.200
+    vm_mgmt_dg: 10.91.55.1
+
+
+    vrf_gw_mon_ip: 10.91.29.1
+    vrf_name: VRF-GSLB
+    prefix_name: luiz
+    vcenter_folder: luiz
+    network_name: PG-1029
+    net_address: 10.91.29.0
+    net_maskbits: 24
+    beg_addr: 10.91.29.101
+    end_addr: 10.91.29.250
+    service_engine_group_name: SEGGSLB
+
+  tasks:
+    # VRF for admin cloud connectro
+    - name: Config Admin VRF
+      avi_vrfcontext:
+        avi_credentials:
+          controller: "{{ controller }}"
+          username: "{{ username }}"
+          password: "{{ password }}"
+          api_version: "{{ api_version }}"
+        name: "vrf-{{ vm_mgmt_nw_name }}"
+        avi_api_update_method: patch
+        avi_api_patch_op: replace
+        system_default: true
+        cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
+        tenant_ref: "/api/tenant/?name= {{ tenant }}"
+        static_routes:
+        - cloud_ref:  "/api/cloud/?name={{ vmware_cloud_name }}"
+          system_default: false
+          next_hop:
+            addr: "{{ vm_mgmt_dg }}"
+            type: V4
+          prefix_text: 0.0.0.0/0
+          prefix:
+            ip_addr:
+              addr: 0.0.0.0
+              type: V4
+            mask: '0'
+          route_id: '1'
+
+    # Network for admin Cloud
+    - name: Config Admin Network
+      avi_network:
+        avi_credentials:
+          controller: "{{ controller }}"
+          username: "{{ username }}"
+          password: "{{ password }}"
+          api_version: "{{ api_version }}"
+        name: "{{ vm_mgmt_nw_name }}"
+        vrf_context_ref: "/api/vrfcontext/?name=vrf-{{ vm_mgmt_nw_name }}"
+        tenant_ref: "/api/tenant/?name=admin"
+        cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
+        configured_subnets:
+          - prefix:
+              ip_addr:
+                type: V4
+                addr: "{{ vm_mgmt_nw_addr }}"
+              mask: "{{ vm_mgmt_maskbits }}"
+            static_ranges:
+            - begin:
+                type: V4
+                addr: "{{ vm_mgmt_begin_addr }}"
+              end:
+                type: V4
+                addr: "{{ vm_mgmt_end_addr }}"
+        exclude_discovered_subnets: false
+        dhcp_enabled: false
+        vcenter_dvs: true

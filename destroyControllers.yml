@@ -1,0 +1,34 @@
+---
+#ansible-playbook destroyControllers.yml -e "vm_name=luiz-0-gslb-cluster-ctrl mgmt_ip=10.10.29.250"&
+#ansible-playbook destroyControllers.yml -e "vm_name=luiz-1-gslb-cluster-ctrl mgmt_ip=10.10.29.251"&
+#ansible-playbook destroyControllers.yml -e "vm_name=luiz-2-gslb-cluster-ctrl mgmt_ip=10.10.29.252"&
+- hosts: localhost
+  connection: local
+  roles:
+    - { role: avinetworks.avicontroller-vmware }
+    - { role: avinetworks.avisdk }
+  
+  vars:
+    state: absent
+    vcenter_host: 10.10.2.10
+    vcenter_user: root
+    vcenter_pwd: vmware
+    datacenter: 10GTest
+    cluster: Arista
+    vm_name: luiz-0-gslb-cluster-ctrl
+    mgmt_network: Mgmt_Arista_3
+    ova_path: .
+    
+  tasks:
+    - name: Destroy Avi Controller "{{ vm_name }}"
+      deploy_controller:
+        state: "{{ state }}"
+        ovftool_path: /usr/bin/
+        vcenter_host: "{{ vcenter_host }}"
+        vcenter_user: "{{ vcenter_user }}"
+        vcenter_password: "{{ vcenter_pwd }}"
+        con_datacenter: "{{ datacenter }}"
+        con_cluster: "{{ cluster }}"
+        con_vm_name: "{{ vm_name }}"
+        con_mgmt_network: "{{ mgmt_network }}"
+        con_ova_path: "{{ ova_path }}"

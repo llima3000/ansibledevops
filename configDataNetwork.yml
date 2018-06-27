@@ -1,0 +1,106 @@
+---
+#ansible-playbook configCloud.yml -e "controller=10.10.29.250"
+- hosts: localhost
+  connection: local
+  vars:
+    controller: 10.91.55.10
+    username: admin
+    password: Avi123$%
+    api_version: 17.2.7
+    tenant: admin
+    vmware_cloud_name: vmwarecloud
+    vcenter_folder: luiz
+    prefix_name: luiz
+    vmware_cluster_name: Arista
+
+    vrf_gw_mon_ip: 10.91.29.1
+    vrf_name: VRF-GSLB
+    network_name: PG-1030
+    net_address: 10.91.30.0
+    net_maskbits: 24
+    beg_addr: 10.91.30.100
+    end_addr: 10.91.30.249
+    service_engine_group_name: SEGGSLB
+
+
+  roles:
+    - { role: avinetworks.avicontroller-vmware }
+    - { role: avinetworks.avisdk }
+
+  tasks:
+    - name: defining avi config for Data Network
+      set_fact:
+        avi_config_data:
+          # VRF Context for Data Service Engine
+          vrfcontext:
+            - name: "{{ vrf_name }}"
+              cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
+              tenant_ref: "/api/tenant/?name= {{ tenant }}"
+              gateway_mon:
+              - cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
+                gateway_ip:
+                  addr: "{{ vrf_gw_mon_ip }}"
+                  type: V4
+                id: "{{ vrf_gw_mon_ip }}"
+              static_routes:
+              - cloud_ref:  "/api/cloud/?name={{ vmware_cloud_name }}"
+                system_default: false
+                next_hop:
+                  addr: "{{ vrf_gw_mon_ip }}"
+                  type: V4
+                prefix_text: 0.0.0.0/0
+                prefix:
+                  ip_addr:
+                    addr: 0.0.0.0
+                    type: V4
+                  mask: '0'
+                route_id: '1'
+
+          # Network Object for Data
+          network:
+            - name: "{{ network_name }}"
+              vrf_context_ref: "/api/vrfcontext/?name={{ vrf_name }}"
+              tenant_ref: "/api/tenant/?name=admin"
+              cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
+              configured_subnets:
+              - prefix:
+                  ip_addr:
+                    type: V4
+                    addr: "{{ net_address }}"
+                  mask: "{{ net_maskbits }}"
+                static_ranges:
+                - begin:
+                    type: V4
+                    addr: "{{ beg_addr }}"
+                  end:
+                    type: V4
+                    addr: "{{ end_addr }}"
+              exclude_discovered_subnets: false
+              vimgrnw_ref: "/api/vimgrnwruntime/?name={{ network_name }}"
+              synced_from_se: false
+              dhcp_enabled: false
+              vcenter_dvs: true
+
+          #  Service Engine Group
+          serviceenginegroup:
+            - name: "{{ service_engine_group_name }}"
+              cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
+              vcenter_folder: "{{ vcenter_folder }}"
+              vcenter_clusters:
+                cluster_refs:
+                  - "/api/vimgrclusterruntime/?name={{ vmware_cluster_name }}"
+                include: True
+              max_se: 4
+              buffer_se: 0
+              se_name_prefix: "{{ prefix_name }}"
+
+    - name: Configure Data Network
+      import_role:
+        name: avinetworks.aviconfig
+      vars:
+        avi_credentials:
+          controller: "{{ controller }}"
+          username: "{{ username }}"
+          password: "{{ password }}"
+          api_version: "{{ api_version }}"
+        avi_config: "{{ avi_config_data }}"

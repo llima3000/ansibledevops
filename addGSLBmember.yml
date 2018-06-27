@@ -1,0 +1,183 @@
+---
+#ansible-playbook configGSLB.yml -e "controller=10.10.29.250"
+- hosts: localhost
+  connection: local
+  vars:
+    controller: 10.10.29.250
+    username: admin
+    password: Avi123$%
+    api_version: 17.2.7
+    sitename: site02
+    domain: gslb.teste.com
+    gslb_controller: 10.10.29.251
+    gslb_fullname: "Gslb Service User"
+    gslb_username: gslb
+    gslb_password: Gslb2018
+
+    vmware_cloud_name: "vmwarecloud"
+    vs_name: VS-GSLB
+    port_num: 53
+    vs_ip: 10.91.55.10
+    app_profile_name: System-DNS
+    vrf_name: VRF-GSLB
+    tenant_name: admin
+    vmwarecloudname: vmwarecloud
+    service_engine_name: SEGGSLB
+    vip_network_address: 10.91.55.0
+    vip_netmask_bits: 24
+    network_name: PG-1055
+
+  roles:
+    - role: avinetworks.avisdk
+
+  tasks:
+#    - name: Check if user exists on Avi
+#      avi_api_session:
+#        username: "{{ username }}"
+#        password: "{{ password }}"
+#        controller: "{{ controller }}"
+#        api_version: "{{ api_version }}"
+#        http_method: get
+#        path: user
+#        params:
+#          name: "{{ gslb_username }}"
+#      register: user_exists
+#    - name: Existing User
+#      debug: msg="{{ user_exists}}"
+#
+#    - name: Create User on Avi
+#      avi_api_session:
+#        username: "{{ username }}"
+#        password: "{{ password }}"
+#        controller: "{{ controller }}"
+#        api_version: "{{ api_version }}"
+#        http_method: post
+#        path: user
+#        data:
+#          name: "{{ gslb_username }}"
+#          username: "{{ gslb_username }}"
+#          password: "{{ gslb_password}}"
+#          access:
+#            - role_ref: "/api/role?name=System-Admin"
+#              tenant_ref: "/api/tenant?name={{ tenant_name }}"
+#          user_profile_ref: "/api/useraccountprofile?name=No-Lockout-User-Account-Profile"
+#      when: user_exists.obj.count == 0
+#
+#    - name: Get VS info "{{ vs_name }}"
+#      avi_api_session:
+#        username: "{{ username }}"
+#        password: "{{ password }}"
+#        controller: "{{ controller }}"
+#        api_version: "{{ api_version }}"
+#        http_method: get
+#        path: virtualservice
+#        params:
+#          name: "{{ vs_name }}"
+#      register: vs_info
+  
+#    - name: Create GSLB VS "{{ vs_name }}"
+#      avi_virtualservice:
+#        controller: "{{ controller }}"
+#        username: "{{ username }}"
+#        password: "{{ password }}"
+#        api_version: "{{ api_version }}"
+#        name: "{{ vs_name }}"
+#        services:
+#            - port: "{{ port_num }}"
+#        application_profile_ref: '/api/applicationprofile?name={{ app_profile_name }}'
+#        vrf_context_ref: "/api/vrfcontext/?name={{ vrf_name }}"
+#        tenant_ref: "/api/tenant/?name={{ tenant_name }}"
+#        cloud_ref: "/api/cloud?name={{ vmwarecloudname }}"
+#        se_group_ref: "/api/serviceenginegroup/?name={{ service_engine_name }}"
+#        vip:
+#            -
+#              vip_id: 0
+#              subnet:
+#                mask: "{{ vip_netmask_bits }}"
+#                ip_addr:
+#                  type: V4
+#                  addr: "{{ vip_network_address }}"
+#              ip_address:
+#                  type: V4
+#                  addr: "{{ vs_ip }}"
+#              network_ref: '/api/network/?name={{ network_name }}'
+#              discovered_networks:
+#                -
+#                    subnet:
+#                        -
+#                            mask: "{{ vip_netmask_bits }}"
+#                            ip_addr:
+#                                type: V4
+#                                addr: "{{ vip_network_address }} "
+#                    network_ref: '/api/network/?name={{ network_name }}'
+#      when: user_exists.obj.count == 0
+#      register: vs_info
+
+    - name: Get main Cluster Information using avi_api_session
+      avi_api_session:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: get
+        path: cluster
+      register: cluster_info
+
+#    - name: Get VS info "{{ vs_name }}"
+#      avi_api_session:
+#        username: "{{ username }}"
+#        password: "{{ password }}"
+#        controller: "{{ controller }}"
+#        api_version: "{{ api_version }}"
+#        http_method: get
+#        path: virtualservice
+#        params:
+#          name: "{{ vs_name }}"
+#      register: vs_info
+
+    - name: Check GSLB Member
+      avi_api_session:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: post
+        path: gslbsiteops/verify
+        data: '{ "username": "{{ gslb_username }}", "password": "{{ gslb_password }}", "ip_addresses": [ { "addr": "{{ gslb_controller }}", "type": "V4" ], "port": 443 }'
+
+      register: gslb_member
+
+    - name: UPDATE GSLB
+      avi_gslb:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: patch
+        sites:
+        - enabled: true
+          port: 443
+          member_type: GSLB_ACTIVE_MEMBER
+          cluster_uuid: "{{ gslb_member['obj'].tx_uuid }}"
+          ip_addresses:
+          - type: V4
+            addr: "{{ gslb_controller }}"
+          #dns_vses:
+          #      -
+          #          dns_vs_uuid: "{{ vs_info['obj']['results'][0]['uuid'] }}"
+          #          domain_names: []
+          name: "{{ sitename }}"
+          username: "{{ gslb_username }}"
+          password: "{{ gslb_password }}"
+        send_interval: 30
+        name: "{{ sitename }}"
+        dns_configs:
+        - domain_name: "{{ domain }}"
+        leader_cluster_uuid: "{{ cluster_info['obj'].uuid }}"
+        third_party_sites:
+          - 
+            enabled: true
+            name: "{{ sitename }}_outside"
+            hm_proxies:
+              - 
+                site_uuid: "{{ gslb_member['obj'].tx_uuid }}"
