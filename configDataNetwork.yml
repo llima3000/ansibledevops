@@ -35,7 +35,7 @@
           vrfcontext:
             - name: "{{ vrf_name }}"
               cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
-              tenant_ref: "/api/tenant/?name= {{ tenant }}"
+              tenant_ref: "/api/tenant/?name={{ tenant }}"
               gateway_mon:
               - cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
                 gateway_ip:

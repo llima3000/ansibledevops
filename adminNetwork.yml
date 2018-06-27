@@ -49,7 +49,7 @@
         avi_api_patch_op: replace
         system_default: true
         cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
-        tenant_ref: "/api/tenant/?name= {{ tenant }}"
+        tenant_ref: "/api/tenant/?name={{ tenant }}"
         static_routes:
         - cloud_ref:  "/api/cloud/?name={{ vmware_cloud_name }}"
           system_default: false
