@@ -10,17 +10,17 @@
     cluster_vip: 10.10.29.249
     cluster_node2: 10.10.29.251
     cluster_node3: 10.10.29.252
-    api_version: 17.2.7
     avi_credentials:
       username: admin
       password: Avi123$%
       controller: "{{ controller }}"
+      api_version: 17.2.7
+
 
   tasks:
     - name: Get main Cluster Information
       avi_api_session:
         avi_credentials: "{{ avi_credentials }}"
-        api_version: "{{ api_version }}"
         http_method: get
         path: cluster
       register: cluster_info
