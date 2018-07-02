@@ -29,8 +29,7 @@
       avi_cluster:
         controller: "{{ controller }}"
         avi_credentials: "{{ avi_credentials }}"
-        api_version: "{{ api_version }}"
-
+        
         nodes:
             - 
               name: "{{ controller }}"
