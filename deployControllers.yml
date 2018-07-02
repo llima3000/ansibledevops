@@ -18,7 +18,7 @@
     ova_path: ../../controller-17.2.11-9014.ova
     vm_name: luiz-1-gslb-cluster-ctrl
     folder: luiz
-    datastore: AS01
+    datastore: AS10
     mgmt_network: "Mgmt_Arista_3"
     power_on: true
     mgmt_ip: 10.10.29.250

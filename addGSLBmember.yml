@@ -1,5 +1,5 @@
 ---
-#ansible-playbook configGSLB.yml -e "controller=10.10.29.250"
+#ansible-playbook addGSLBmember.yml -e "controller=10.10.29.250"
 - hosts: localhost
   connection: local
   vars:

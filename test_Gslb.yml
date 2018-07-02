@@ -1,0 +1,125 @@
+---
+#ansible-playbook configGSLB.yml -e "controller=10.10.29.250"
+- hosts: localhost
+  connection: local
+  vars:
+    controller: 10.91.55.10
+    username: admin
+    password: Avi123$%
+    api_version: 17.2.7
+    sitename: site01
+    domain: gslb.teste.com
+    gslb_controller: 10.91.55.10
+    gslb_fullname: "Gslb Service User"
+    gslb_username: gslb
+    gslb_password: Gslb2018
+
+    vmware_cloud_name: "vmwarecloud"
+    vs_name: VS-GSLB
+    port_num: 53
+    vs_ip: 10.91.30.11
+    app_profile_name: System-DNS
+    vrf_name: VRF-GSLB
+    tenant_name: admin
+    vmwarecloudname: vmwarecloud
+    service_engine_name: SEGGSLB
+    vip_network_address: 10.91.30.0
+    vip_netmask_bits: 24
+    network_name: PG-1030
+
+  roles:
+    - role: avinetworks.avisdk
+
+  tasks:
+    # Configure GSLB VS and site
+    - name: "Check if user {{ gslb_username }} exists on Avi"
+      avi_api_session:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: get
+        path: user
+        params:
+          name: "{{ gslb_username }}"
+      register: user_exists
+    - name: Existing User
+      debug: msg="{{ user_exists}}"
+
+    - name: "If user {{ gslb_username }} doesn't exist create it on Avi"
+      avi_api_session:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: post
+        path: user
+        data:
+          name: "{{ gslb_username}}"
+          username: "{{ gslb_username }}"
+          password: "{{ gslb_password}}"
+          access:
+            - role_ref: "/api/role?name=System-Admin"
+              tenant_ref: "/api/tenant?name={{ tenant_name }}"
+          user_profile_ref: "/api/useraccountprofile?name=No-Lockout-User-Account-Profile"
+      when: user_exists.obj.count == 0
+
+    # Get VS uuid for GSLB placement
+    - name: Get VS info "{{ vs_name }}"
+      avi_api_session:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: get
+        path: virtualservice
+        params:
+          name: "{{ vs_name }}"
+      register: vs_info
+
+    # Get main Cluster object to reference in GSLB
+    - name: Get main Cluster Information
+      avi_api_session:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: get
+        path: cluster
+      register: cluster_info
+      
+    - name: Create GSLB
+      avi_gslb:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        avi_api_update_method: patch
+        avi_api_patch_op: add
+        sites:
+        - enabled: true
+          port: 443
+          member_type: GSLB_ACTIVE_MEMBER
+          cluster_uuid: "{{ cluster_info['obj'].uuid }}"
+          ip_addresses:
+          - type: V4
+            addr: "{{ gslb_controller }}"
+          dns_vses:
+                -
+                    dns_vs_uuid: “{{ lookup(vs_info, ‘uuid’) }}”
+                    domain_names: []
+          name: "{{ sitename }}"
+          username: "{{ gslb_username }}"
+          password: "{{ gslb_password }}"
+        send_interval: 30
+        name: "{{ sitename }}"
+        dns_configs:
+        - domain_name: "{{ domain }}"
+        leader_cluster_uuid: "{{ cluster_info['obj'].uuid }}"
+        third_party_sites:
+          - 
+            enabled: true
+            name: "{{ sitename }}_outside"
+            hm_proxies:
+              - 
+                site_uuid: "{{ cluster_info['obj'].uuid }}"
