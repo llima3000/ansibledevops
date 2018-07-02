@@ -2,7 +2,7 @@
 - hosts: 10.91.55.5
   connection: ssh 
   remote_user: admin 
-  remote_pass: Avi123$%
+  #remote_pass: Avi123$%
 
   tasks:
     - name: Copy upgrade file
