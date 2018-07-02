@@ -1,8 +1,8 @@
 #ansible-playbook creadePool.yml
 - hosts: 10.91.55.5
   connection: ssh 
-  ssh_user: admin 
-  ssh_pass: Avi123$%
+  user: admin 
+  pass: Avi123$%
 
   tasks:
     - name: Copy upgrade file
