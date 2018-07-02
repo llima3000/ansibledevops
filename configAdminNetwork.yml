@@ -23,9 +23,6 @@
     vm_mgmt_end_addr: 10.91.55.200
     vm_mgmt_dg: 10.91.55.1
 
-
-    vrf_gw_mon_ip: 10.91.29.1
-    vrf_name: VRF-GSLB
     prefix_name: luiz
     vcenter_folder: luiz
     network_name: PG-1029
@@ -44,9 +41,9 @@
           username: "{{ username }}"
           password: "{{ password }}"
           api_version: "{{ api_version }}"
-        name: "vrf-{{ vm_mgmt_nw_name }}"
+        name: global
         avi_api_update_method: patch
-        avi_api_patch_op: replace
+        avi_api_patch_op: add
         system_default: true
         cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
         tenant_ref: "/api/tenant/?name={{ tenant }}"
@@ -73,8 +70,8 @@
           password: "{{ password }}"
           api_version: "{{ api_version }}"
         name: "{{ vm_mgmt_nw_name }}"
-        vrf_context_ref: "/api/vrfcontext/?name=vrf-{{ vm_mgmt_nw_name }}"
-        tenant_ref: "/api/tenant/?name=admin"
+        vrf_context_ref: "/api/vrfcontext/?name=global"
+        tenant_ref: "/api/tenant/?name={{ tenant }}"
         cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
         configured_subnets:
           - prefix:
@@ -91,4 +88,4 @@
                 addr: "{{ vm_mgmt_end_addr }}"
         exclude_discovered_subnets: false
         dhcp_enabled: false
-        vcenter_dvs: true
+#        vcenter_dvs: true
