@@ -1,9 +1,9 @@
 ---
-#ansible-playbook configCloud.yml -e "controller=10.10.29.250"
+#ansible-playbook configAdminNetwork.yml -e "controller=10.91.55.10"
 - hosts: localhost
   connection: local
   vars:
-    controller: 10.10.29.250
+    controller: 10.91.55.10
     username: admin
     password: Avi123$%
     api_version: 17.2.7
@@ -22,15 +22,6 @@
     vm_mgmt_begin_addr: 10.91.55.100
     vm_mgmt_end_addr: 10.91.55.200
     vm_mgmt_dg: 10.91.55.1
-
-    prefix_name: luiz
-    vcenter_folder: luiz
-    network_name: PG-1029
-    net_address: 10.91.29.0
-    net_maskbits: 24
-    beg_addr: 10.91.29.101
-    end_addr: 10.91.29.250
-    service_engine_group_name: SEGGSLB
 
   tasks:
     # VRF for admin cloud connectro
