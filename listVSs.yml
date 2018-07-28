@@ -1,0 +1,23 @@
+---
+#ansible-playbook listVSs.yml -e@vars/waf_vars.yml
+- hosts: localhost
+  connection: local
+  
+  roles:
+    - role: avinetworks.avisdk
+
+  tasks:
+    - name: Get VSs
+      avi_api_session:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: get
+        path: virtualservice
+      register: vs_info
+    
+    - name: List All VSs
+      debug:
+        msg: "VS Name: {{ item.name }}"
+      loop: "{{ vs_info['obj'].results }}"

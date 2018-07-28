@@ -1,0 +1,23 @@
+---
+#ansible-playbook listWafPolicies.yml -e@vars/waf_vars.yml
+- hosts: localhost
+  connection: local
+  
+  roles:
+    - role: avinetworks.avisdk
+
+  tasks:
+    - name: Get Waf Policies
+      avi_api_session:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: get
+        path: wafpolicy
+      register: waf_info
+    
+    - name: List All Waf Policies
+      debug:
+        msg: "VS Name: {{ item.name }}"
+      loop: "{{ waf_info['obj'].results }}"
