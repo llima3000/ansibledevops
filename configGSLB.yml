@@ -3,13 +3,13 @@
 - hosts: localhost
   connection: local
   vars:
-    controller: 10.91.55.10
+    controller: 10.91.55.11
     username: admin
     password: Avi123$%
     api_version: 17.2.7
     sitename: site01
     domain: gslb.teste.com
-    gslb_controller: 10.91.55.10
+    gslb_controller: 10.91.55.11
     gslb_fullname: "Gslb Service User"
     gslb_username: gslb
     gslb_password: Gslb2018

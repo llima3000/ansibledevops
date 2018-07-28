@@ -1,0 +1,47 @@
+---
+#ansible-playbook applyWafPolicy.yml -e@vars/waf_vars.yml -e "vs_name=VS-GSLB waf_policy_name=WafProfile"
+- hosts: localhost
+  connection: local
+  
+  roles:
+    - role: avinetworks.avisdk
+
+  tasks:
+    - name: Get VS info "{{ vs_name }}"
+      avi_api_session:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: get
+        path: virtualservice
+        params:
+          name: "{{ vs_name }}"
+      register: vs_info
+    
+    - name: Get WAF Profile info "{{ waf_policy_name }}"
+      avi_api_session:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: get
+        path: wafpolicy
+        params:
+          name: "{{ waf_policy_name }}"
+      register: waf_profile_info
+
+    - name: Update VS "{{ vs_name }}" with "{{ waf_policy_name }}
+      avi_virtualservice:
+        controller: "{{ controller }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        api_version: "{{ api_version }}"
+        avi_api_update_method: patch
+        avi_api_patch_op: add
+        waf_policy_ref: "{{ q(waf_profile_info.obj, 'uuid') }}"
+        #waf_policy_ref: /api/wafpolicy?name="{{ waf_policy_name }}"
+        #uuid: "{{ lookup(vs_info.obj, 'uuid') }}"
+        name: "{{ vs_name }}"
+        uuid: "{{ vs_info['obj']['results'][0]['uuid'] }}"
+      #when: vs_info.obj.count == 1
