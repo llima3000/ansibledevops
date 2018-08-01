@@ -7,8 +7,12 @@
   roles:
     - { role: avinetworks.avicontroller-vmware }
     - { role: avinetworks.avisdk }
-    
+
   tasks:
+    - name: Include vars
+      include_vars:
+        file: vars/env_vars.yml
+        
     - name: Deploy Avi Controller "{{ vm_name }}"
       deploy_controller:
         state: "{{ state | default('present')}}"
