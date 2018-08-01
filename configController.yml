@@ -2,17 +2,6 @@
 #ansible-playbook configController.yml -e "controller=10.10.29.250"
 - hosts: localhost
   connection: local
-  vars:
-    controller: 10.91.55.10
-    username: admin
-    api_version: 17.2.7
-    password: Avi123$%
-    old_password: 58NFaGDJm(PJH0G
-    from_email: admin@avinetworks.com
-    dns_server01: 8.8.8.8
-    dns_server02: 8.8.4.4
-    ntp_server01: 0.us.pool.ntp.org
-    ntp_server02: 1.us.pool.ntp.org
 
   roles:
     - { role: avinetworks.avicontroller-vmware }
@@ -52,7 +41,7 @@
           tenant_access_to_provider_se: true
           tenant_vrf: false
         dns_configuration:
-          search_domain: ''
+          search_domain: "{{ search_domains }}"
           server_list:
             - type: V4
               addr: "{{ dns_server01 }}"

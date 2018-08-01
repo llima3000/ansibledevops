@@ -1,46 +1,28 @@
 ---
-#ansible-playbook deployControllers.yml -e "mgmt_ip=10.10.29.250 vm_name=luiz-0-gslb-cluster-ctrl"&
-#ansible-playbook deployControllers.yml -e "mgmt_ip=10.10.29.251 vm_name=luiz-1-gslb-cluster-ctrl"&
-#ansible-playbook deployControllers.yml -e "mgmt_ip=10.10.29.252 vm_name=luiz-2-gslb-cluster-ctrl"&
+#ansible-playbook deployControllers.yml -e "mgmt_ip=10.91.55.11 vm_name=luiz-0-gslb-cluster-ctrl"&
+#ansible-playbook deployControllers.yml -e "mgmt_ip=10.91.56.11 vm_name=luiz-1-gslb-cluster-ctrl"&
+#ansible-playbook deployControllers.yml -e "mgmt_ip=10.91.57.11 vm_name=luiz-2-gslb-cluster-ctrl"&
 - hosts: localhost
   connection: local
   roles:
     - { role: avinetworks.avicontroller-vmware }
     - { role: avinetworks.avisdk }
-  
-  vars:
-    state: present
-    vcenter_host: 10.10.2.10
-    vcenter_user: root
-    vcenter_pwd: vmware
-    datacenter: 10GTest
-    cluster: Arista
-    ova_path: ../../controller-17.2.11-9014.ova
-    vm_name: luiz-1-gslb-cluster-ctrl
-    folder: luiz
-    datastore: AS10
-    mgmt_network: "Mgmt_Arista_3"
-    power_on: true
-    mgmt_ip: 10.10.29.250
-    mgmt_mask: 255.255.254.0
-    default_gw: 10.10.28.1
-
     
   tasks:
     - name: Deploy Avi Controller "{{ vm_name }}"
       deploy_controller:
-        state: "{{ state }}"
+        state: "{{ state | default('present')}}"
         ovftool_path: /usr/bin/
         vcenter_host: "{{ vcenter_host }}"
         vcenter_user: "{{ vcenter_user }}"
         vcenter_password: "{{ vcenter_pwd }}"
-        con_datacenter: "{{ datacenter }}"
-        con_cluster: "{{ cluster }}"
+        con_datacenter: "{{ vmware_datacenter }}"
+        con_cluster: "{{ vmware_cluster }}"
         con_ova_path: "{{ ova_path }}"
         con_vm_name: "{{ vm_name }}"
-        con_vcenter_folder: "{{ folder }}"
-        con_datastore: "{{ datastore }}"
-        con_mgmt_network: "{{ mgmt_network }}"
+        con_vcenter_folder: "{{ vcenter_folder }}"
+        con_datastore: "{{ vmware_datastore }}"
+        con_mgmt_network: "{{ controller_mgmt_network }}"
         con_power_on: "{{ power_on }}"
         con_mgmt_ip: "{{ mgmt_ip }}"
         con_mgmt_mask: "{{ mgmt_mask }}"

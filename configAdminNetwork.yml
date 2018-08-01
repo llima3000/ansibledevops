@@ -2,26 +2,6 @@
 #ansible-playbook configAdminNetwork.yml -e "controller=10.91.55.10"
 - hosts: localhost
   connection: local
-  vars:
-    controller: 10.91.55.10
-    username: admin
-    password: Avi123$%
-    api_version: 17.2.7
-    vcenter_url: "10.10.2.10"
-    vcenter_user: root
-    vcenter_pwd: vmware
-    tenant: admin
-    discovery_time: 750
-    vmware_cloud_name: vmwarecloud
-    cloud_datacenter: 10GTest
-    old_password: 58NFaGDJm(PJH0G
-    vmware_cluster_name: Arista
-    vm_mgmt_nw_name: PG-1055
-    vm_mgmt_nw_addr: 10.91.55.0
-    vm_mgmt_maskbits: 24
-    vm_mgmt_begin_addr: 10.91.55.100
-    vm_mgmt_end_addr: 10.91.55.200
-    vm_mgmt_dg: 10.91.55.1
 
   tasks:
     # VRF for admin cloud connectro
@@ -37,7 +17,7 @@
         avi_api_patch_op: add
         system_default: true
         cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
-        tenant_ref: "/api/tenant/?name={{ tenant }}"
+        tenant_ref: "/api/tenant/?name={{ vmware_tenant }}"
         static_routes:
         - cloud_ref:  "/api/cloud/?name={{ vmware_cloud_name }}"
           system_default: false
@@ -62,7 +42,7 @@
           api_version: "{{ api_version }}"
         name: "{{ vm_mgmt_nw_name }}"
         vrf_context_ref: "/api/vrfcontext/?name=global"
-        tenant_ref: "/api/tenant/?name={{ tenant }}"
+        tenant_ref: "/api/tenant/?name={{ vmware_tenant }}"
         cloud_ref: "/api/cloud/?name={{ vmware_cloud_name }}"
         configured_subnets:
           - prefix:
