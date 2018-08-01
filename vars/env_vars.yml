@@ -8,7 +8,7 @@ vars:
   vm_prefix_name: luiz
   vcenter_folder: "{{ vm_prefix_name }}"
   ova_path: ..//controller-17.2.12-9128.ova
-  vm_name: "{{ vm_prefix_name }}-1-gslb-cluster-ctrl"
+  vm_name: luiz-55-gslb
   vmware_datastore: AS10
   controller_mgmt_network: "PG-1055"
   power_on: true
