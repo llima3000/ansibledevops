@@ -6,14 +6,14 @@ vmware_datacenter: 10GTest
 vmware_cluster: Arista
 vm_prefix_name: luiz
 vcenter_folder: "{{ vm_prefix_name }}"
-controller_mgmt_network: PG-1055
+controller_mgmt_network: PG-1056
 ova_path: ../controller-17.2.12-9128.ova
-vm_name: luiz-55-gslb
+vm_name: luiz-56-gslb
 vmware_datastore: AS10
 power_on: true
-mgmt_ip: 10.91.55.11
+mgmt_ip: 10.91.56.11
 mgmt_mask: 255.255.254.0
-default_gw: 10.91.55.1
+default_gw: 10.91.56.1
 
 #basic controller vers
 controller: "{{ mgmt_ip }}"
@@ -36,23 +36,23 @@ vmware_cloud_name: vmwarecloud
 vmware_tenant: "{{ tenant }}"
 vmware_connector_datacenter: "{{ vmware_datacenter }}"
 vm_mgmt_nw_name: "{{ controller_mgmt_network }}" 
-vm_mgmt_nw_addr: 10.91.55.0
+vm_mgmt_nw_addr: 10.91.56.0
 vm_mgmt_maskbits: 24
 
 # VMware management VRF
-vm_mgmt_begin_addr: 10.91.55.100
-vm_mgmt_end_addr: 10.91.55.200
-vm_mgmt_dg: 10.91.55.1
+vm_mgmt_begin_addr: 10.91.56.100
+vm_mgmt_end_addr: 10.91.56.200
+vm_mgmt_dg: 10.91.56.1
 
 #datanetwork VRF and SE Group vars
 vrf_name: VRF-GSLB
-vrf_network_name: PG-1029
+vrf_network_name: PG-1030
 vrf_tenant: "{{ tenant }}"
-vrf_gw_mon_ip: 10.91.29.1
-vrf_net_address: 10.91.29.0
+vrf_gw_mon_ip: 10.91.30.1
+vrf_net_address: 10.91.30.0
 vrf_net_maskbits: 24
-vrf_beg_addr: 10.91.29.101
-vrf_end_addr: 10.91.29.250
+vrf_beg_addr: 10.91.30.101
+vrf_end_addr: 10.91.30.250
 se_group_name: SEG-GSLB
 se_name_prefix: "{{ vm_prefix_name }}"
 se_vmware_cluster_name: "{{ vmware_cluster }}"
@@ -69,9 +69,17 @@ vs_ip_network_address: 10.91.30.0
 vs_ip: 10.91.30.11
 vs_network_name: "{{ vrf_network_name }}" 
 
-gslb_sitename: site01
-gslb_domain: gslb.teste.com
-gslb_controller: 10.91.55.11
-gslb_fullname: "Gslb Service User"
-gslb_username: gslb
-gslb_password: Gslb2018
+gslb_leader_sitename: site01
+gslb_leader_domain: gslb.teste.com
+gslb_leader_controller: 10.91.55.11
+gslb_leader_fullname: "Gslb Service User"
+gslb_leader_username: gslb
+gslb_leader_password: Gslb2018
+
+gslb_follower_sitename: site02
+gslb_follower_domain: gslb.teste.com
+gslb_follower_controller: 10.91.56.11
+gslb_follower_fullname: "Gslb Service User"
+gslb_follower_username: gslb
+gslb_follower_password: Gslb2018
+

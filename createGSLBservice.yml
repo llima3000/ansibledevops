@@ -25,8 +25,6 @@
     member_enable: true
     member_ratio: 1
 
-
-
   tasks:
     - name: Get main Cluster Information using avi_api_session
       avi_api_session:

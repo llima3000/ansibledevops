@@ -8,7 +8,7 @@
 
   tasks:
     # Configure GSLB VS and site
-    - name: "Check if user {{ gslb_username }} exists on Avi"
+    - name: "Check if user {{ gslb_leader_username }} exists on Avi"
       avi_api_session:
         username: "{{ username }}"
         password: "{{ password }}"
@@ -17,13 +17,13 @@
         http_method: get
         path: user
         params:
-          name: "{{ gslb_username }}"
+          name: "{{ gslb_leader_username }}"
       register: user_exists
 
 #    - name: Existing User
 #      debug: msg="{{ user_exists }}"
 
-    - name: "If user {{ gslb_username }} doesn't exist create it on Avi"
+    - name: "If user {{ gslb_leader_username }} doesn't exist create it on Avi"
       avi_api_session:
         username: "{{ username }}"
         password: "{{ password }}"
@@ -32,12 +32,12 @@
         http_method: post
         path: user
         data:
-          name: "{{ gslb_username}}"
-          username: "{{ gslb_username }}"
-          password: "{{ gslb_password}}"
+          name: "{{ gslb_leader_username}}"
+          username: "{{ gslb_leader_username }}"
+          password: "{{ gslb_leader_password}}"
           access:
             - role_ref: "/api/role?name=System-Admin"
-              tenant_ref: "/api/tenant?name={{ gslb_tenant }}"
+              tenant_ref: "/api/tenant?name={{ gslb_leader_tenant }}"
           user_profile_ref: "/api/useraccountprofile?name=No-Lockout-User-Account-Profile"
       when: user_exists.obj.count == 0
 
@@ -54,7 +54,7 @@
             - port: "{{ port_num }}"
         application_profile_ref: '/api/applicationprofile?name=System-DNS'
         vrf_context_ref: "/api/vrfcontext/?name={{ vs_vrf_name }}"
-        tenant_ref: "/api/tenant/?name={{ gslb_tenant }}"
+        tenant_ref: "/api/tenant/?name={{ gslb_leader_tenant }}"
         cloud_ref: "/api/cloud?name={{ vs_vmware_cloud_name }}"
         se_group_ref: "/api/serviceenginegroup/?name={{ vs_SEG_name }}"
         vip:
@@ -114,23 +114,23 @@
           cluster_uuid: "{{ cluster_info['obj'].uuid }}"
           ip_addresses:
           - type: V4
-            addr: "{{ gslb_controller }}"
+            addr: "{{ gslb_leader_controller }}"
           dns_vses:
                 -
                     dns_vs_uuid: "{{ vs_info['obj']['results'][0]['uuid'] }}"
                     domain_names: []
           name: "{{ sitename }}"
-          username: "{{ gslb_username }}"
-          password: "{{ gslb_password }}"
+          username: "{{ gslb_leader_username }}"
+          password: "{{ gslb_leader_password }}"
         send_interval: 30
-        name: "{{ gslb_sitename }}"
+        name: "{{ gslb_leader_sitename }}"
         dns_configs:
-        - domain_name: "{{ gslb_domain }}"
+        - domain_name: "{{ gslb_leader_domain }}"
         leader_cluster_uuid: "{{ cluster_info['obj'].uuid }}"
         third_party_sites:
           - 
             enabled: true
-            name: "{{ gslb_sitename }}_outside"
+            name: "{{ gslb_leader_sitename }}_outside"
             hm_proxies:
               - 
                 site_uuid: "{{ cluster_info['obj'].uuid }}"
