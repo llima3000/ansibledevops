@@ -6,9 +6,9 @@ vars:
   vmware_datacenter: 10GTest
   vmware_cluster: Arista
   vm_prefix_name: luiz
-  ova_path: ../../controller-17.2.11-9014.ova
+  vcenter_folder: "{{ vm_prefix_name }}"
+  ova_path: ..//controller-17.2.12-9128.ova
   vm_name: "{{ vm_prefix_name }}-1-gslb-cluster-ctrl"
-  vcenter_folder: luiz
   vmware_datastore: AS10
   controller_mgmt_network: "PG-1055"
   power_on: true
@@ -61,18 +61,17 @@ vars:
   #GSLB Vars
   vs_name: VS-GSLB
   port_num: 53
-  vs_ip: 10.91.30.11
-  app_profile_name: System-DNS
   vs_vrf_name: "{{ vrf_name }}"
-  tenant_name: admin
-  vmwarecloudname: vmwarecloud
-  service_engine_name: SEGGSLB
-  vip_network_address: 10.91.30.0
-  vip_netmask_bits: 24
+  gslb_tenant: "{{ tenant }}"
+  vs_vmware_cloud_name: "{{ vmware_cloud_name }}"
+  vs_SEG_name: "{{ se_group_name }}"
+  vs_ip_netmask_bits: 24
+  vs_ip_network_address: 10.91.30.0
+  vs_ip: 10.91.30.11
   vs_network_name: "{{ vrf_network_name }}" 
 
-  sitename: site01
-  domain: gslb.teste.com
+  gslb_sitename: site01
+  gslb_domain: gslb.teste.com
   gslb_controller: 10.91.55.11
   gslb_fullname: "Gslb Service User"
   gslb_username: gslb
