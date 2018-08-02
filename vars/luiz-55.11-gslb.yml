@@ -64,9 +64,9 @@ se_vmware_cluster_name: "{{ vmware_cluster }}"
 
 # Cluster vars 
 cluster_name: Avi_Cluster
-cluster_vip: 10.10.29.249
-cluster_node2: 10.10.29.251
-cluster_node3: 10.10.29.252
+cluster_vip: 10.91.55.10
+cluster_node2: 10.91.55.12
+cluster_node3: 10.91.55.13
 
 #GSLB Vars
 vs_name: VS-GSLB
