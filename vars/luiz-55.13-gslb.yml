@@ -1,0 +1,77 @@
+#deployment vars
+vcenter_host: 10.10.2.10
+vcenter_user: root
+vcenter_pwd: vmware
+vmware_datacenter: 10GTest
+vmware_cluster: Arista
+vm_prefix_name: luiz
+vcenter_folder: "{{ vm_prefix_name }}"
+controller_mgmt_network: PG-1055
+ova_path: ../controller-17.2.12-9128.ova
+vm_name: luiz-55-gslb-13
+vmware_datastore: AS10
+power_on: true
+mgmt_ip: 10.91.55.13
+mgmt_mask: 255.255.254.0
+default_gw: 10.91.55.1
+
+#basic controller vers
+controller: "{{ mgmt_ip }}"
+username: admin
+api_version: 17.2.10
+password: Avi123$%
+old_password: 58NFaGDJm(PJH0G
+from_email: admin@avinetworks.com
+search_domains: ""
+dns_server01: 8.8.8.8
+dns_server02: 8.8.4.4
+ntp_server01: 0.us.pool.ntp.org
+ntp_server02: 1.us.pool.ntp.org
+tenant: admin
+
+# VMWare cloud connector
+vcenter_url: "{{ vcenter_host }}"
+discovery_time: 120
+vmware_cloud_name: vmwarecloud
+vmware_tenant: "{{ tenant }}"
+vmware_connector_datacenter: "{{ vmware_datacenter }}"
+vm_mgmt_nw_name: "{{ controller_mgmt_network }}" 
+vm_mgmt_nw_addr: 10.91.55.0
+vm_mgmt_maskbits: 24
+
+# VMware management VRF
+vm_mgmt_begin_addr: 10.91.55.100
+vm_mgmt_end_addr: 10.91.55.200
+vm_mgmt_dg: 10.91.55.1
+
+#datanetwork VRF and SE Group vars
+vrf_name: VRF-GSLB
+vrf_network_name: PG-1029
+vrf_tenant: "{{ tenant }}"
+vrf_gw_mon_ip: 10.91.29.1
+vrf_net_address: 10.91.29.0
+vrf_net_maskbits: 24
+vrf_beg_addr: 10.91.29.101
+vrf_end_addr: 10.91.29.250
+se_group_name: SEG-GSLB
+se_name_prefix: "{{ vm_prefix_name }}"
+se_vmware_cluster_name: "{{ vmware_cluster }}"
+
+#GSLB Vars
+vs_name: VS-GSLB
+port_num: 53
+vs_vrf_name: "{{ vrf_name }}"
+gslb_tenant: "{{ tenant }}"
+vs_vmware_cloud_name: "{{ vmware_cloud_name }}"
+vs_SEG_name: "{{ se_group_name }}"
+vs_ip_netmask_bits: 24
+vs_ip_network_address: 10.91.29.0
+vs_ip: 10.91.29.11
+vs_network_name: "{{ vrf_network_name }}" 
+
+gslb_leader_sitename: site01
+gslb_leader_domain: gslb.teste.com
+gslb_leader_controller: 10.91.55.11
+gslb_leader_fullname: "Gslb Service User"
+gslb_leader_username: gslb
+gslb_leader_password: Gslb2018

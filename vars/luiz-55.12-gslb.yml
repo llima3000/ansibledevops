@@ -8,10 +8,10 @@ vm_prefix_name: luiz
 vcenter_folder: "{{ vm_prefix_name }}"
 controller_mgmt_network: PG-1055
 ova_path: ../controller-17.2.12-9128.ova
-vm_name: luiz-55-gslb
+vm_name: luiz-55-gslb-12
 vmware_datastore: AS10
 power_on: true
-mgmt_ip: 10.91.55.11
+mgmt_ip: 10.91.55.12
 mgmt_mask: 255.255.254.0
 default_gw: 10.91.55.1
 
