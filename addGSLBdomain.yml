@@ -1,0 +1,42 @@
+---
+#ansible-playbook configGSLB.yml -e "controller=10.10.29.250"
+- hosts: localhost
+  connection: local
+
+  roles:
+    - role: avinetworks.avisdk
+
+  tasks:
+    - name: Get GSLB object
+      avi_api_session:
+        username: "{{ username }}"
+        password: "{{ password }}"
+        controller: "{{ controller }}"
+        api_version: "{{ api_version }}"
+        http_method: get
+        path: gslb
+        params:
+          name: "{{ gslb_leader_sitename }}"
+      register: gslb_object
+
+    - name: testing
+      debug:
+        msg: '{{ gslb_object.obj.results.0 }}'
+
+#    - avi_gslb:
+#        avi_api_update_method: patch
+#        avi_api_patch_op: add
+#        api_context: '{{ api_context | default(omit) }}'
+#        username: "{{ username }}"
+#        password: "{{ password }}"
+#        controller: "{{ controller }}"
+#        api_version: "{{ api_version }}"
+#        sites:
+#        - enabled: true
+#          port: 443
+#          member_type: GSLB_ACTIVE_MEMBER
+#          cluster_uuid: "{{ gslb_object['obj']['results'][0].leader_cluster_uuid }}"
+#          name: "{{ gslb_object['obj']['results'][0].gslb_site_name }}"
+#        name: "{{ name }}"
+#        leader_cluster_uuid: "{{ cluster_info['obj'].uuid }}"
+#      name: "Create GSLB cluster: {{ gslb_cluster_name }}"

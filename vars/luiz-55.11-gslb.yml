@@ -36,7 +36,7 @@ tenant: admin
 
 # VMWare cloud connector
 vcenter_url: "{{ vcenter_host }}"
-discovery_time: 120
+discovery_time: 450
 vmware_cloud_name: vmwarecloud
 vmware_tenant: "{{ tenant }}"
 vmware_connector_datacenter: "{{ vmware_datacenter }}"
@@ -77,8 +77,13 @@ vs_vmware_cloud_name: "{{ vmware_cloud_name }}"
 vs_SEG_name: "{{ se_group_name }}"
 vs_ip_netmask_bits: 24
 vs_ip_network_address: 10.91.29.0
-vs_ip: 10.91.29.11
-vs_network_name: "{{ vrf_network_name }}" 
+vs_ip: 10.91.29.5
+vs_network_name: "{{ vrf_network_name }}"
+gslb_leader_tenant: "{{ tenant }}"
+vip_netmask_bits: 24
+vip_network_address: 10.91.29.0
+network_name: PG-1029
+sitename: LeaderGSLB
 
 gslb_leader_sitename: site01
 gslb_leader_domain: gslb.teste.com

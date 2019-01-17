@@ -22,7 +22,6 @@
 
 #    - name: Existing User
 #      debug: msg="{{ user_exists }}"
-
     - name: "If user {{ gslb_leader_username }} doesn't exist create it on Avi"
       avi_api_session:
         username: "{{ username }}"
@@ -122,7 +121,7 @@
           name: "{{ sitename }}"
           username: "{{ gslb_leader_username }}"
           password: "{{ gslb_leader_password }}"
-        send_interval: 30
+        send_interval: 120
         name: "{{ gslb_leader_sitename }}"
         dns_configs:
         - domain_name: "{{ gslb_leader_domain }}"
@@ -130,7 +129,7 @@
         third_party_sites:
           - 
             enabled: true
-            name: "{{ gslb_leader_sitename }}_outside"
+            name: "{{ gslb_leader_sitename }}_3rdParty"
             hm_proxies:
               - 
                 site_uuid: "{{ cluster_info['obj'].uuid }}"
